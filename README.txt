@@ -5,19 +5,20 @@ TWAMP8266
 Building the container
 ----------------------
 
-podman build -t arduino-cli .
+# podman build -t arduino-cli .
 
 
 Compiling
 ---------
 
-podman run \
+# git submodule update --init --recursive
+# podman run \
     --rm \
     -v $(pwd):/workspace \
     arduino-cli \
         arduino-cli compile -e \
         --fqbn esp8266:esp8266:d1_mini_clone \
-        --libraries /workspace/src/twamp8266 \
+        --libraries /workspace/src/twamp8266,/workspace/src/NTPClient \
         /workspace/main
 
 Output:
@@ -35,7 +36,7 @@ Global variables use 27980 bytes (34%) of dynamic memory, leaving 53940 bytes fo
 Flashing
 --------
 
-docker run \
+# podman run \
     --rm \
     -v $(pwd):/workspace \
     --device=/dev/ttyUSB0 \
@@ -43,7 +44,7 @@ docker run \
         arduino-cli upload \
         -p /dev/ttyUSB0 \
         --fqbn esp8266:esp8266:d1_mini_clone \
-        -i /workspace//main/build/esp8266.esp8266.d1_mini_clone/main.ino.bin
+        -i /workspace/main/build/esp8266.esp8266.d1_mini_clone/main.ino.bin
 
 Output:
 esptool.py v3.0
@@ -68,4 +69,9 @@ Wrote 265072 bytes (195076 compressed) at 0x00000000 in 4.4 seconds (effective 4
 Hash of data verified.
 Leaving...
 Hard resetting via RTS pin...
+
+Connecting to the serial console
+--------------------------------
+
+# screen /dev/ttyUSB0 115200
 
