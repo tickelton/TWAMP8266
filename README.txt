@@ -18,7 +18,7 @@ Compiling
     arduino-cli \
         arduino-cli compile -e \
         --fqbn esp8266:esp8266:d1_mini_clone \
-        --libraries /workspace/src/twamp8266,/workspace/src/NTPClient \
+        --libraries /workspace/libraries \
         /workspace/main
 
 Output:
