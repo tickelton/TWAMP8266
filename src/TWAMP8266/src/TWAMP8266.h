@@ -5,19 +5,30 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
+#undef TWAMP8266_DEBUG
+//#define TWAMP8266_DEBUG
 
-void twamp8266_blink();
-
-constexpr uint16_t defaultPort = 862;
+constexpr auto maxPacketSize = 4096;
+constexpr auto minRequestLength = 14;
+constexpr auto minResponseLength = 41;
+constexpr auto defaultPort = 862;
+constexpr uint8_t senderTTL = 255;
 
 class TWAMP8266 {
-    uint16_t _listenPort;
-  public:
-    TWAMP8266() : _listenPort(defaultPort) {}
-    TWAMP8266(uint16_t listenPort) : _listenPort(listenPort) {}
+  const uint16_t _errorEstimate = htons(1);
 
-    uint16_t getPort() { return _listenPort; }
+  int _listenPort;
+  int _sequenceNr = 0;
+  char _recvBuf[maxPacketSize] = {0};
+  char _sendBuf[maxPacketSize] = {0};
+  WiFiUDP _udp;
+
+ public:
+  TWAMP8266() : _listenPort(defaultPort) {}
+  TWAMP8266(int listenPort) : _listenPort(listenPort) {}
+
+  void begin();
+  void loop();
 };
 
-
-#endif //__TWAMP8266_H__
+#endif  //__TWAMP8266_H__
