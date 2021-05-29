@@ -3,15 +3,16 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <NTPLight.h>
 #include <WiFiUdp.h>
 
-#undef TWAMP8266_DEBUG
-//#define TWAMP8266_DEBUG
+//#undef TWAMP8266_DEBUG
+#define TWAMP8266_DEBUG
 
 constexpr auto maxPacketSize = 4096;
 constexpr auto minRequestLength = 14;
 constexpr auto minResponseLength = 41;
-constexpr auto defaultPort = 862;
+constexpr auto twlDefaultPort = 862;
 constexpr uint8_t senderTTL = 255;
 
 class TWAMP8266 {
@@ -22,9 +23,11 @@ class TWAMP8266 {
   char _recvBuf[maxPacketSize] = {0};
   char _sendBuf[maxPacketSize] = {0};
   WiFiUDP _udp;
+  NTPLight _ntp;
+  NtpTs _ts = {0, 0};
 
  public:
-  TWAMP8266() : _listenPort(defaultPort) {}
+  TWAMP8266() : _listenPort(twlDefaultPort) {}
   TWAMP8266(int listenPort) : _listenPort(listenPort) {}
 
   void begin();

@@ -1,6 +1,18 @@
 #include "TWAMP8266.h"
 
-void TWAMP8266::begin() { _udp.begin(_listenPort); }
+void TWAMP8266::begin() {
+  _udp.begin(_listenPort);
+  _ntp.begin();
+  auto ret = _ntp.getTime(_ts);
+#if defined(TWAMP8266_DEBUG)
+  if (ret) {
+    Serial.printf("NTP update success: sec=%lu frac=%lu\r\n", _ts.seconds,
+                  _ts.fractions);
+  } else {
+    Serial.println("NTP updated failed!");
+  }
+#endif  // TWAMP8266_DEBUG
+}
 
 void TWAMP8266::loop() {
   // Check if there's a packet available.
@@ -9,7 +21,7 @@ void TWAMP8266::loop() {
     // TODO: get receive timestamp
 
 #if defined(TWAMP8266_DEBUG)
-    Serial.printf("Received %d bytes from %s\n", packetSize,
+    Serial.printf("Received %d bytes from %s\r\n", packetSize,
                   _udp.remoteIP().toString().c_str());
 #endif  // TWAMP8266_DEBUG
 

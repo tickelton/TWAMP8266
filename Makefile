@@ -1,8 +1,8 @@
 BUILDDIR=main/build
 MAIN_INO=main/main.ino
-LIB_DIR=src/TWAMP8266/src
-CPP_FILES=$(wildcard $(LIB_DIR)/*.cpp)
-H_FILES=$(wildcard $(LIB_DIR)/*.h)
+LIB_DIRS=libraries/NTPLight libraries/TWAMP8266
+CPP_FILES=$(foreach libdir,$(LIB_DIRS),$(wildcard $(libdir)/*.cpp))
+H_FILES= $(foreach libdir,$(LIB_DIRS),$(wildcard $(libdir)/*.h))
 
 .PHONY: flash
 
