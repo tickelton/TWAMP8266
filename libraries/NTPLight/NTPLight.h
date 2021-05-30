@@ -4,11 +4,11 @@
 #include <Arduino.h>
 #include <WiFiUdp.h>
 
-#define NTPLight_DEBUG
+#undef NTPLight_DEBUG
 
 struct NtpTs {
-  unsigned long seconds;
-  unsigned long fractions;
+  uint32_t seconds;
+  uint16_t fractions;
 };
 
 using NtpTimestamp = struct NtpTs;

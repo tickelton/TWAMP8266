@@ -3,14 +3,16 @@
 void TWAMP8266::begin() {
   _udp.begin(_listenPort);
   _ntp.begin();
-  auto ret = _ntp.getTime(_ts);
 #if defined(TWAMP8266_DEBUG)
+  auto ret = _ntp.getTime(_receiveTs);
   if (ret) {
-    Serial.printf("NTP update success: sec=%lu frac=%lu\r\n", _ts.seconds,
-                  _ts.fractions);
+    Serial.printf("NTP update success: sec=%lu frac=%u\r\n", _receiveTs.seconds,
+                  _receiveTs.fractions);
   } else {
     Serial.println("NTP updated failed!");
   }
+#else
+  _ntp.getTime(_receiveTs);
 #endif  // TWAMP8266_DEBUG
 }
 
@@ -19,6 +21,11 @@ void TWAMP8266::loop() {
   int packetSize = _udp.parsePacket();
   if (packetSize) {
     // TODO: get receive timestamp
+    auto ntpRet = _ntp.getTime(_receiveTs);
+    if (!ntpRet) {
+      Serial.println("Error getting receive timestamp.");
+      _receiveTs = {0, 0};
+    }
 
 #if defined(TWAMP8266_DEBUG)
     Serial.printf("Received %d bytes from %s\r\n", packetSize,
@@ -43,10 +50,15 @@ void TWAMP8266::loop() {
       // Set response sequence number.
       uint32_t longVal = htonl(_sequenceNr);
       memcpy(_sendBuf, &longVal, 4);
-      // TODO: set receive timestamp
 
       // Set error estimate.
       memcpy(_sendBuf + 12, &_errorEstimate, 2);
+
+      // set receive timestamp
+      longVal = htonl(_receiveTs.seconds);
+      memcpy(_sendBuf + 16, &longVal, 4);
+      uint16_t shortVal = htons(_receiveTs.fractions);
+      memcpy(_sendBuf + 20, &shortVal, 2);
 
       // Copy request packet to the appropriate location in the
       // response packet.
@@ -54,6 +66,19 @@ void TWAMP8266::loop() {
       memcpy(_sendBuf + 40, &senderTTL, 1);
 
       // TODO: get send timestamp
+      ntpRet = _ntp.getTime(_sendTs);
+      if (!ntpRet) {
+        Serial.println("Error getting send timestamp.");
+        _sendTs = {0, 0};
+      }
+
+      // set send timestamp
+      longVal = htonl(_sendTs.seconds);
+      memcpy(_sendBuf + 4, &longVal, 4);
+      shortVal = htons(_sendTs.fractions);
+      memcpy(_sendBuf + 8, &shortVal, 2);
+
+      // send packet
       _udp.beginPacket(_udp.remoteIP(), _udp.remotePort());
       _udp.write(_sendBuf, minResponseLength);
       _udp.endPacket();
@@ -64,6 +89,14 @@ void TWAMP8266::loop() {
       memset(_recvBuf, 0, maxPacketSize);
       memset(_sendBuf, 0, maxPacketSize);
       _sequenceNr++;
+    }
+  } else {
+    // If there's no packet to process, update NTP time.
+    // An actual request the the NTP server is only send
+    // if the update interval is expired.
+    auto ntpRet = _ntp.getTime(_receiveTs);
+    if (!ntpRet) {
+      Serial.println("Error updating NTP time.");
     }
   }
 }

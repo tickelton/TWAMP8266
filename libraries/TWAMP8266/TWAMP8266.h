@@ -6,8 +6,39 @@
 #include <NTPLight.h>
 #include <WiFiUdp.h>
 
-//#undef TWAMP8266_DEBUG
-#define TWAMP8266_DEBUG
+//
+// TWAMP test packet format according to RFC5357:
+//
+// 0                   1                   2                   3
+// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                        Sequence Number                        |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                          Timestamp                            |
+// |                                                               |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |         Error Estimate        |           MBZ                 |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                          Receive Timestamp                    |
+// |                                                               |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                        Sender Sequence Number                 |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                      Sender Timestamp                         |
+// |                                                               |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |      Sender Error Estimate    |           MBZ                 |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |  Sender TTL   |                                               |
+// +-+-+-+-+-+-+-+-+                                               +
+// |                                                               |
+// .                                                               .
+// .                         Packet Padding                        .
+// .                                                               .
+// |                                                               |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+#undef TWAMP8266_DEBUG
 
 constexpr auto maxPacketSize = 4096;
 constexpr auto minRequestLength = 14;
@@ -24,7 +55,8 @@ class TWAMP8266 {
   char _sendBuf[maxPacketSize] = {0};
   WiFiUDP _udp;
   NTPLight _ntp;
-  NtpTs _ts = {0, 0};
+  NtpTs _receiveTs = {0, 0};
+  NtpTs _sendTs = {0, 0};
 
  public:
   TWAMP8266() : _listenPort(twlDefaultPort) {}

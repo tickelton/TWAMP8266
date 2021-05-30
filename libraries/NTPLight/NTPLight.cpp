@@ -54,10 +54,10 @@ bool NTPLight::getTime(NtpTimestamp& ts) {
 #endif  // NTPLight_DEBUG
 
     highWord = word(_packetBuf[44], _packetBuf[45]);
-    unsigned long transmit_dec = highWord;
+    uint16_t transmit_dec = highWord;
 
 #if defined(NTPLight_DEBUG)
-    Serial.printf("fractions = %lu\r\n", transmit_dec);
+    Serial.printf("fractions = %u\r\n", transmit_dec);
 #endif  // NTPLight_DEBUG
 
     _lastTimestamp = {.seconds = secsSince1900, .fractions = transmit_dec};
@@ -75,7 +75,7 @@ bool NTPLight::getTime(NtpTimestamp& ts) {
   Serial.printf("secDiff = %lu\r\n", secDiff);
   Serial.printf("msDiff = %lu\r\n", msDiff);
   Serial.printf("tsTmp = %lu\r\n", tsTmp);
-  Serial.printf("ts.fractions = %lu\r\n", ts.fractions);
+  Serial.printf("ts.fractions = %u\r\n", ts.fractions);
   Serial.printf("ts.seconds = %lu\r\n", ts.seconds);
 #endif  // NTPLight_DEBUG
 
