@@ -22,6 +22,4 @@ void setup() {
   reflector.begin();
 }
 
-void loop() {
-  reflector.loop();
-}
+void loop() { reflector.loop(); }

@@ -24,18 +24,15 @@ bool NTPLight::getTime(NtpTimestamp& ts) {
     _udp.endPacket();
 
     // Wait till data is there or timeout...
-    byte timeout = 0;
+    int timeout = 0;
     int cb = 0;
     do {
-      delay(10);
+      _lastUpdate = millis();
+      delay(1);
       cb = _udp.parsePacket();
-      if (timeout > 100) return false;  // timeout after 1000 ms
+      if (timeout > 1000) return false;  // timeout after 1000 ms
       timeout++;
     } while (cb == 0);
-
-    _lastUpdate =
-        millis() -
-        ((10 * (timeout + 1))/2);  // Account for delay in reading the time
 
 #if defined(NTPLight_DEBUG)
     Serial.println("Received NTP data.");
@@ -76,7 +73,7 @@ bool NTPLight::getTime(NtpTimestamp& ts) {
   Serial.printf("msDiff = %lu\r\n", msDiff);
   Serial.printf("tsTmp = %lu\r\n", tsTmp);
   Serial.printf("ts.fractions = %u\r\n", ts.fractions);
-  Serial.printf("ts.seconds = %lu\r\n", ts.seconds);
+  Serial.printf("ts.seconds = %u\r\n", ts.seconds);
 #endif  // NTPLight_DEBUG
 
   return true;

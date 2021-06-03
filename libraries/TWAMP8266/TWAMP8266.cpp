@@ -92,7 +92,7 @@ void TWAMP8266::loop() {
     }
   } else {
     // If there's no packet to process, update NTP time.
-    // An actual request the the NTP server is only send
+    // An actual request the the NTP server is only sent
     // if the update interval is expired.
     auto ntpRet = _ntp.getTime(_receiveTs);
     if (!ntpRet) {
