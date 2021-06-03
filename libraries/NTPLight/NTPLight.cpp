@@ -35,7 +35,7 @@ bool NTPLight::getTime(NtpTimestamp& ts) {
 
     _lastUpdate =
         millis() -
-        (10 * (timeout + 1));  // Account for delay in reading the time
+        ((10 * (timeout + 1))/2);  // Account for delay in reading the time
 
 #if defined(NTPLight_DEBUG)
     Serial.println("Received NTP data.");

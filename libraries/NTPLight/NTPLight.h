@@ -19,7 +19,7 @@ constexpr auto kNtpUpdateInterval = 60 * 60 * 1000;  // 1h
 
 class NTPLight {
   unsigned long _lastUpdate = 0;
-  const char* _ntpServerName = "time.google.com";
+  const char* _ntpServerName = "ntp.ubuntu.com";
   byte _packetBuf[kNtpPacketSize] = {0};
   WiFiUDP _udp;
   NtpTs _lastTimestamp = {0, 0};

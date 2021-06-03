@@ -4,7 +4,7 @@ LIB_DIRS=libraries/NTPLight libraries/TWAMP8266
 CPP_FILES=$(foreach libdir,$(LIB_DIRS),$(wildcard $(libdir)/*.cpp))
 H_FILES= $(foreach libdir,$(LIB_DIRS),$(wildcard $(libdir)/*.h))
 
-.PHONY: flash
+.PHONY: flash tty clean format-diff format
 
 all: help
 
