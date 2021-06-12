@@ -78,7 +78,7 @@ make tty
 
 On first boot the ESP8266 will not be able to connect to your WiFi since the network name and password are not set by default.
 
-To set the WiFi credentials connect to tye serical console and interrupt normal startup by hitting *Return* within the first 5 seconds after device startup. You will be presented with the following prompt that allows you to configure your network.
+To set the WiFi credentials connect to the serial console and interrupt normal startup by hitting *Return* within the first 5 seconds after device startup. You will be presented with the following prompt that allows you to configure your network.
 
 ```
 
