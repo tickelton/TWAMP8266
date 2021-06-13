@@ -30,7 +30,9 @@ bool NTPLight::getTime(NtpTimestamp& ts) {
       _lastUpdate = millis();
       delay(1);
       cb = _udp.parsePacket();
-      if (timeout > 1000) return false;  // timeout after 1000 ms
+      if (timeout > 1000) {
+        return false;
+      }  // timeout after 1000 ms
       timeout++;
     } while (cb == 0);
 
